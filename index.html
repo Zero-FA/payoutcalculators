@@ -528,9 +528,9 @@ function renderModernNeed(){
     return;
   }
 
-  const belowSafetyAmount = Math.max(0, safety - balance);
-  const needed = belowSafetyAmount + payoutAmount;
   const atOrOverSafety = balance >= safety;
+  const needed = atOrOverSafety ? 0 : (safety - balance) + payoutAmount;
+  const payoutNumberNeed = atOrOverSafety ? 0 : max;
 
   out.style.display="block";
   out.innerHTML=`
@@ -551,7 +551,7 @@ function renderModernNeed(){
     <div class="grid">
       <div class="box">
         <div class="k">Minimum Profit Needed For This Payout Number</div>
-        <div class="v">${fmt0(max)}</div>
+        <div class="v ${atOrOverSafety?'ok':'warn'}">${fmt0(payoutNumberNeed)}</div>
       </div>
     </div>
   `;
