@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Payout Request Calculator</title>
+
+<style>
+:root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+*{box-sizing:border-box;}
+body{margin:0;padding:24px;background:#0b1220;color:#e8eefc;}
+
+.card{
+  max-width:980px;
+  margin:auto;
+  background:#111a2e;
+  border:1px solid #223052;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+.section{
+  margin-top:18px;
+  padding:0;
+  border-radius:14px;
+  border:1px solid #d4af37;
+  background:rgba(0,0,0,.12);
+  box-shadow:0 0 12px rgba(212,175,55,0.25);
+  overflow:hidden;
+}
+.section:first-child{ margin-top:0; }
+
+details.section summary{
+  list-style:none;
+  cursor:pointer;
+  padding:18px 20px;
+  font-size:20px;
+  font-weight:700;
+  user-select:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+details.section summary::-webkit-details-marker{display:none;}
+details.section summary::after{
+  content:"▼";
+  font-size:14px;
+  color:#d4af37;
+}
+details.section[open] summary::after{
+  content:"▲";
+}
+
+.section-body{
+  padding:0 20px 20px;
+}
+
+h1{margin:0;font-size:22px;}
+h2{margin:0 0 10px;font-size:18px;}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:12px;
+  margin-bottom:12px;
+}
+label{font-size:12px;color:#b8c6e8;margin-bottom:6px;display:block;}
+select,input{
+  width:100%;
+  height:44px;
+  border-radius:12px;
+  border:1px solid #2a3b66;
+  background:#0b1220;
+  color:#e8eefc;
+  padding:10px 12px;
+}
+.results{
+  margin-top:14px;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #223052;
+  background:rgba(255,255,255,.03);
+}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+.box{padding:10px;border-radius:12px;border:1px solid #223052;background:rgba(0,0,0,.15);}
+.k{font-size:12px;color:#b8c6e8;}
+.v{font-size:18px;font-weight:700;}
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th,td{border-bottom:1px solid #223052;padding:8px;text-align:left;}
+.warn{color:#ffd37a;}
+.ok{color:#8dffa3;}
+.pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid #223052;background:rgba(0,0,0,.18);color:#b8c6e8;}
+.note{font-size:12px;color:#b8c6e8;margin-top:6px;}
+
+@media (max-width: 860px){
+  .row{grid-template-columns:1fr;}
+  .grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+
+<body>
+<div class="card">
+
+  <h1 style="text-align:center; font-size:28px; margin-bottom:18px; color:#d4af37;">
+    Apex Trader Funding Payout Calculators
+  </h1>
+
+  <!-- ===================== Legacy Violation Tool ===================== -->
+  <details class="section" id="legacyViolationTool">
+    <summary>Legacy Payout Calculator (Violation)</summary>
+    <div class="section-body">
+
+      <div class="row">
+        <div>
+          <label>Legacy Account Size</label>
+          <select id="legacy_acct">
+            <option value="25k">$25k Account</option>
+            <option value="50k" selected>$50k Account</option>
+            <option value="100k">$100k Account</option>
+            <option value="150k">$150k Account</option>
+            <option value="250k">$250k Account</option>
+            <option value="300k">$300k Account</option>
+            <option value="100k_static">$100k Static</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Legacy Payout Number</label>
+          <select id="legacy_violation_payout_group">
+            <option value="1-5" selected>Payouts 1-5</option>
+            <option value="6">Payout 6+</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Current Balance (Or after violation)</label>
+          <input id="legacy_balance" type="number" step="0.01" placeholder="e.g. 52600.00">
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Minimum Profit Needed ($)</label>
+          <input id="legacy_payout" type="number" step="0.01" readonly>
+          <div class="note" id="legacyViolationPayoutNote">Violation tool uses max payout automatically.</div>
+        </div>
+      </div>
+
+      <div id="legacyOut" class="results" style="display:none"></div>
+
+      <div class="results" style="margin-top:14px;">
+        <h2>Legacy – Minimum Profit Needed Requirements</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Account Size</th>
+              <th>Safety Net</th>
+              <th>Minimum Profit Needed</th>
+              <th>Minimum Profit Needed Balance</th>
+            </tr>
+          </thead>
+          <tbody id="legacyRequirementTable"></tbody>
+        </table>
+
+        <div class="box" style="margin-top:16px">
+          <div class="k" style="font-size:16px;font-weight:700;color:#ffd37a;margin-bottom:10px;">
+            Violation Formula (Payout 1-5)
+          </div>
+          <div class="v" style="font-size:15px;font-weight:600;margin-bottom:8px;">
+            <span style="color:#ffd37a;">If under Safety Net:</span>
+            <span style="color:#e8eefc;"> Safety Net - Current Balance + Minimum Profit Needed</span>
+          </div>
+          <div class="v" style="font-size:15px;font-weight:600;">
+            <span style="color:#ffd37a;">If over Safety Net:</span>
+            <span style="color:#e8eefc;"> Just Minimum Profit Needed</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </details>
+
+  <!-- ===================== Legacy Regular Payout Tool ===================== -->
+  <details class="section" id="legacyRegularTool">
+    <summary>Legacy Payout Calculator (No Violation)</summary>
+    <div class="section-body">
+
+      <div class="row">
+        <div>
+          <label>Legacy Account Size</label>
+          <select id="legacy_regular_acct">
+            <option value="25k">$25k Account</option>
+            <option value="50k" selected>$50k Account</option>
+            <option value="100k">$100k Account</option>
+            <option value="150k">$150k Account</option>
+            <option value="250k">$250k Account</option>
+            <option value="300k">$300k Account</option>
+            <option value="100k_static">$100k Static</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Legacy Payout Number</label>
+          <select id="legacy_regular_payout_num">
+            <option value="1-3" selected>Payouts 1-3</option>
+            <option value="4-5">Payouts 4-5</option>
+            <option value="6">Payout 6+</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Current Balance</label>
+          <input id="legacy_regular_balance" type="number" step="0.01" placeholder="e.g. 52600.00">
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Desired Payout Request ($)</label>
+          <input id="legacy_regular_payout" type="number" step="0.01" placeholder="e.g. 1500">
+        </div>
+
+        <div>
+          <label>Minimum Profit Needed</label>
+          <input id="legacy_regular_max_display" type="text" readonly>
+        </div>
+      </div>
+
+      <div class="note" id="legacyRegularPayoutNote">Payouts 1-5 are capped by account max. Payout 6+ is unlimited.</div>
+
+      <div id="legacyRegularOut" class="results" style="display:none"></div>
+    </div>
+  </details>
+
+  <!-- ===================== Modern Tool ===================== -->
+  <details class="section" id="modernTool">
+    <summary>New Product Payout + Tier Calculator</summary>
+    <div class="section-body">
+
+      <div class="row">
+        <div>
+          <label>Account Size</label>
+          <select id="acct">
+            <option value="25k">25K</option>
+            <option value="50k" selected>50K</option>
+            <option value="100k">100K</option>
+            <option value="150k">150K</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Payout Type</label>
+          <select id="ptype">
+            <option value="eod" selected>EOD</option>
+            <option value="intra">Intraday</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Current Balance</label>
+          <input id="modern_balance" type="number" step="0.01" placeholder="e.g. 53425.00">
+        </div>
+      </div>
+
+      <div class="row" style="grid-template-columns:1fr 1fr 1fr;">
+        <div>
+          <label>Payout Number</label>
+          <select id="payout_num">
+            <option value="" selected disabled>Select payout number</option>
+            <option value="1">Payout #1</option>
+            <option value="2">Payout #2</option>
+            <option value="3">Payout #3</option>
+            <option value="4">Payout #4</option>
+            <option value="5">Payout #5</option>
+            <option value="6">Payout #6</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Desired Payout Request ($)</label>
+          <input id="modern_payout" type="number" step="0.01" placeholder="e.g. 1500">
+          <div style="margin-top:8px;display:flex;gap:10px;align-items:center">
+            <input id="modern_usemax" type="checkbox" style="width:auto;height:auto;margin:0">
+            <div class="k">Use max payout for this payout number</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="liveReq" class="results"></div>
+      <div id="modernNeed" class="results" style="display:none"></div>
+      <div id="payoutTable" class="results" style="display:none"></div>
+    </div>
+  </details>
+
+</div>
+
+<script>
+const fmt0=n=>n.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
+const fmt2=n=>n.toLocaleString("en-US",{style:"currency",currency:"USD",minimumFractionDigits:2,maximumFractionDigits:2});
+const MIN_PAYOUT = 500;
+
+function getMinimumRequestBalance(safetyNet){
+  return safetyNet + MIN_PAYOUT;
+}
+
+/* ===================== Modern Tool Data ===================== */
+
+const COMPLETE_REQ={
+  "25k":{minTradeDays:5,minDailyEOD:100,minDailyIntra:100,consistency:"Required",safetyNetEOD:26100,safetyNetIntra:26600,maxPayouts:6},
+  "50k":{minTradeDays:5,minDailyEOD:250,minDailyIntra:200,consistency:"Required",safetyNetEOD:52100,safetyNetIntra:52600,maxPayouts:6},
+  "100k":{minTradeDays:5,minDailyEOD:300,minDailyIntra:250,consistency:"Required",safetyNetEOD:103100,safetyNetIntra:103600,maxPayouts:6},
+  "150k":{minTradeDays:5,minDailyEOD:350,minDailyIntra:300,consistency:"Required",safetyNetEOD:154100,safetyNetIntra:154600,maxPayouts:6}
+};
+
+const PROFIT_TIERS={
+  "25k":[
+    {level:1,min:0,max:999,maxContracts:1,dll:500},
+    {level:2,min:1000,max:1999,maxContracts:2,dll:500},
+    {level:3,min:2000,max:Infinity,maxContracts:2,dll:1250}
+  ],
+  "50k":[
+    {level:1,min:0,max:1499,maxContracts:2,dll:1000},
+    {level:2,min:1500,max:2999,maxContracts:3,dll:1000},
+    {level:3,min:3000,max:5999,maxContracts:4,dll:2000},
+    {level:4,min:6000,max:Infinity,maxContracts:4,dll:3000}
+  ],
+  "100k":[
+    {level:1,min:0,max:1999,maxContracts:3,dll:1750},
+    {level:2,min:2000,max:2999,maxContracts:4,dll:1750},
+    {level:3,min:3000,max:4999,maxContracts:5,dll:1750},
+    {level:4,min:5000,max:9999,maxContracts:6,dll:2500},
+    {level:5,min:10000,max:Infinity,maxContracts:6,dll:3500}
+  ],
+  "150k":[
+    {level:1,min:0,max:1999,maxContracts:4,dll:2500},
+    {level:2,min:2000,max:2999,maxContracts:5,dll:2500},
+    {level:3,min:3000,max:4999,maxContracts:7,dll:2500},
+    {level:4,min:5000,max:9999,maxContracts:10,dll:3000},
+    {level:5,min:10000,max:Infinity,maxContracts:10,dll:4000}
+  ]
+};
+
+const PAYOUT_NUMBER_TIERS={
+  "25k":[
+    {payoutNum:1,eodMax:1000,intraMax:1000},
+    {payoutNum:2,eodMax:1000,intraMax:1000},
+    {payoutNum:3,eodMax:1000,intraMax:1000},
+    {payoutNum:4,eodMax:1000,intraMax:1000},
+    {payoutNum:5,eodMax:1000,intraMax:1000},
+    {payoutNum:6,eodMax:1000,intraMax:1000}
+  ],
+  "50k":[
+    {payoutNum:1,eodMax:1500,intraMax:1500},
+    {payoutNum:2,eodMax:1500,intraMax:2000},
+    {payoutNum:3,eodMax:2000,intraMax:2500},
+    {payoutNum:4,eodMax:2500,intraMax:2500},
+    {payoutNum:5,eodMax:2500,intraMax:3000},
+    {payoutNum:6,eodMax:3000,intraMax:3000}
+  ],
+  "100k":[
+    {payoutNum:1,eodMax:2000,intraMax:2000},
+    {payoutNum:2,eodMax:2500,intraMax:2500},
+    {payoutNum:3,eodMax:2500,intraMax:3000},
+    {payoutNum:4,eodMax:3000,intraMax:3000},
+    {payoutNum:5,eodMax:4000,intraMax:4000},
+    {payoutNum:6,eodMax:4000,intraMax:4000}
+  ],
+  "150k":[
+    {payoutNum:1,eodMax:2500,intraMax:2500},
+    {payoutNum:2,eodMax:3000,intraMax:3000},
+    {payoutNum:3,eodMax:3000,intraMax:3000},
+    {payoutNum:4,eodMax:3000,intraMax:4000},
+    {payoutNum:5,eodMax:4000,intraMax:4000},
+    {payoutNum:6,eodMax:5000,intraMax:5000}
+  ]
+};
+
+function renderLiveRequirements(){
+  const acct=document.getElementById("acct").value;
+  const type=document.getElementById("ptype").value;
+  const req=COMPLETE_REQ[acct];
+
+  const label=(type==="eod")?"EOD":"Intraday";
+  const safety=(type==="eod")?req.safetyNetEOD:req.safetyNetIntra;
+  const daily=(type==="eod")?req.minDailyEOD:req.minDailyIntra;
+  const minRequestBalance=getMinimumRequestBalance(safety);
+
+  document.getElementById("liveReq").innerHTML=`
+    <h2>Complete Payout Requirements (${acct.toUpperCase()})</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Min Trade Days</th>
+          <th>Min Daily Profit (${label})</th>
+          <th>50% Consistency</th>
+          <th>Safety Net</th>
+          <th>Minimum Request Balance</th>
+          <th>Max Payouts</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>${req.minTradeDays}</td>
+          <td>${fmt0(daily)}</td>
+          <td>${req.consistency}</td>
+          <td>${fmt0(safety)}</td>
+          <td>${fmt0(minRequestBalance)}</td>
+          <td>${req.maxPayouts}</td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+}
+
+function getTierText(acct,payout){
+  const tiers=PROFIT_TIERS[acct];
+  if(!tiers) return "N/A";
+  const t=tiers.find(x=>payout>=x.min && payout<=x.max);
+  if(!t) return "N/A";
+  return `Level ${t.level} (Max Contracts ${t.maxContracts}, DLL ${fmt0(t.dll)})`;
+}
+
+function getSelectedPayoutRow(acct,payoutNum){
+  const rows=PAYOUT_NUMBER_TIERS[acct] || [];
+  return rows.find(x=>x.payoutNum===payoutNum);
+}
+
+function runModernCalcSetup(){
+  const acct=document.getElementById("acct").value;
+  const type=document.getElementById("ptype").value;
+  const payoutNumEl=document.getElementById("payout_num");
+  let payoutNumValue=payoutNumEl.value;
+
+  if(!payoutNumValue && document.getElementById("modern_usemax").checked){
+    payoutNumEl.value="1";
+    payoutNumValue="1";
+  }
+
+  if(!payoutNumValue){
+    return null;
+  }
+
+  const payoutNum=parseInt(payoutNumValue,10);
+  const row=getSelectedPayoutRow(acct,payoutNum);
+
+  if(!row) return null;
+
+  const max=(type==="eod") ? row.eodMax : row.intraMax;
+  return { row, max, payoutNum };
+}
+
+function renderModernNeed(){
+  const acct=document.getElementById("acct").value;
+  const type=document.getElementById("ptype").value;
+  const balanceRaw=document.getElementById("modern_balance").value;
+  const payoutRaw=document.getElementById("modern_payout").value;
+  const req=COMPLETE_REQ[acct];
+  const out=document.getElementById("modernNeed");
+  const calcSetup=runModernCalcSetup();
+
+  if(!calcSetup){
+    out.style.display="none";
+    return;
+  }
+
+  const { max } = calcSetup;
+  const safety=(type==="eod") ? req.safetyNetEOD : req.safetyNetIntra;
+
+  if(!payoutRaw){
+    out.style.display="none";
+    return;
+  }
+
+  const payoutAmount=parseFloat(payoutRaw);
+
+  if(!Number.isFinite(payoutAmount) || payoutAmount <= 0){
+    out.style.display="block";
+    out.innerHTML=`<div class="warn">Enter a payout amount greater than 0.</div>`;
+    return;
+  }
+
+  if(payoutAmount < MIN_PAYOUT){
+    out.style.display="block";
+    out.innerHTML=`<div class="warn">Minimum payout amount is ${fmt0(MIN_PAYOUT)}</div>`;
+    return;
+  }
+
+  if(payoutAmount > max){
+    out.style.display="block";
+    out.innerHTML=`<div class="warn">Max payout allowed for this payout number is ${fmt0(max)}</div>`;
+    return;
+  }
+
+  const tierText=getTierText(acct,payoutAmount);
+
+  if(balanceRaw === ""){
+    out.style.display="block";
+    out.innerHTML=`
+      <h2>Payout Goal</h2>
+      <div class="grid">
+        <div class="box">
+          <div class="k">Minimum Profit Needed</div>
+          <div class="v">${fmt2(payoutAmount)}</div>
+        </div>
+
+        <div class="box">
+          <div class="k">Tier Level Required</div>
+          <div class="v">${tierText}</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="box">
+          <div class="k">Minimum Profit Needed For This Payout Number</div>
+          <div class="v">${fmt0(max)}</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const balance=parseFloat(balanceRaw);
+  if(!Number.isFinite(balance) || balance < 0){
+    out.style.display="block";
+    out.innerHTML=`<div class="warn">Enter a valid current balance.</div>`;
+    return;
+  }
+
+  const belowSafetyAmount = Math.max(0, safety - balance);
+  const needed = belowSafetyAmount + payoutAmount;
+  const atOrOverSafety = balance >= safety;
+
+  out.style.display="block";
+  out.innerHTML=`
+    <h2 class="${atOrOverSafety?'ok':'warn'}">Payout Goal</h2>
+
+    <div class="grid">
+      <div class="box">
+        <div class="k">Minimum Profit Needed</div>
+        <div class="v ${atOrOverSafety?'ok':'warn'}">${fmt2(needed)}</div>
+      </div>
+
+      <div class="box">
+        <div class="k">Tier Level Required</div>
+        <div class="v">${tierText}</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="box">
+        <div class="k">Minimum Profit Needed For This Payout Number</div>
+        <div class="v">${fmt0(max)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderModernPayoutTable(){
+  const acct=document.getElementById("acct").value;
+  const type=document.getElementById("ptype").value;
+  const tableEl=document.getElementById("payoutTable");
+  const req=COMPLETE_REQ[acct];
+  const safety=(type==="eod") ? req.safetyNetEOD : req.safetyNetIntra;
+  const minRequestBalance=getMinimumRequestBalance(safety);
+  const typeKey=(type==="eod") ? "eodMax" : "intraMax";
+  const typeLabel=(type==="eod") ? "EOD" : "Intraday";
+  const tiers=PAYOUT_NUMBER_TIERS[acct] || [];
+
+  const rows=tiers.map(tier=>{
+    const payout=tier[typeKey];
+    const tierText=getTierText(acct,payout);
+
+    return `
+      <tr>
+        <td>Payout #${tier.payoutNum}</td>
+        <td>${fmt0(payout)}</td>
+        <td>${tierText}</td>
+        <td>${fmt2(safety)}</td>
+        <td>${fmt2(minRequestBalance)}</td>
+      </tr>
+    `;
+  }).join("");
+
+  tableEl.style.display="block";
+  tableEl.innerHTML=`
+    <h2>${acct.toUpperCase()} ${typeLabel} Payout Table</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Payout Number</th>
+          <th>Minimum Profit Needed</th>
+          <th>Tier Level Required</th>
+          <th>Safety Net</th>
+          <th>Minimum Request Balance</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+    <div class="box" style="margin-top:12px">
+      <div class="k">Simple Math</div>
+      <div class="v">If under safety net: (Safety Net - current balance) + payout amount</div>
+      <div class="k" style="margin-top:8px">If at or over safety net: just the payout amount</div>
+    </div>
+  `;
+}
+
+function updateModernTool(){
+  const payoutInput=document.getElementById("modern_payout");
+  const useMax=document.getElementById("modern_usemax").checked;
+  const setup=runModernCalcSetup();
+
+  if(useMax){
+    if(setup){
+      payoutInput.value=setup.max;
+    }
+  }
+
+  renderLiveRequirements();
+  renderModernNeed();
+  renderModernPayoutTable();
+}
+
+/* ===================== Legacy Tool Data ===================== */
+
+const LEGACY_SAFETY_NET={
+  "25k":26100,
+  "50k":52100,
+  "100k":102600,
+  "150k":154100,
+  "250k":256100,
+  "300k":307100,
+  "100k_static":102100
+};
+
+const LEGACY_MAX_PAYOUT_FIRST5={
+  "25k":1500,
+  "50k":2000,
+  "100k":2500,
+  "150k":2750,
+  "250k":3000,
+  "300k":3500,
+  "100k_static":1000
+};
+
+function getLegacyMinimumRequestBalance(acct){
+  const safetyNet=LEGACY_SAFETY_NET[acct];
+  return safetyNet + MIN_PAYOUT;
+}
+
+function getLegacyRegularMaxDisplay(acct,payoutGroup){
+  if(payoutGroup === "6") return "Unlimited";
+  return fmt2(LEGACY_MAX_PAYOUT_FIRST5[acct]);
+}
+
+function renderLegacyRequirementTable(){
+  const rows = Object.keys(LEGACY_MAX_PAYOUT_FIRST5).map(acct=>{
+    const labelMap={
+      "25k":"$25k",
+      "50k":"$50k",
+      "100k":"$100k",
+      "150k":"$150k",
+      "250k":"$250k",
+      "300k":"$300k",
+      "100k_static":"$100k Static"
+    };
+
+    const safetyNet=LEGACY_SAFETY_NET[acct];
+    const max=LEGACY_MAX_PAYOUT_FIRST5[acct];
+    const balanceNeeded=safetyNet + max;
+
+    return `
+      <tr>
+        <td>${labelMap[acct]}</td>
+        <td>${fmt0(safetyNet)}</td>
+        <td>${fmt0(max)}</td>
+        <td>${fmt0(balanceNeeded)}</td>
+      </tr>
+    `;
+  }).join("");
+
+  document.getElementById("legacyRequirementTable").innerHTML=rows;
+}
+
+/* ===================== Legacy Violations ===================== */
+
+function syncLegacyMaxPayout(){
+  const acct=document.getElementById("legacy_acct").value;
+  const payoutInput=document.getElementById("legacy_payout");
+  const note=document.getElementById("legacyViolationPayoutNote");
+  const maxFirst5=LEGACY_MAX_PAYOUT_FIRST5[acct];
+
+  payoutInput.readOnly=true;
+  payoutInput.value=maxFirst5;
+  note.textContent="Violation tool uses max payout automatically.";
+}
+
+function runLegacyCalc(){
+  const acct=document.getElementById("legacy_acct").value;
+  const payoutGroup=document.getElementById("legacy_violation_payout_group").value;
+  const balRaw=document.getElementById("legacy_balance").value;
+  const payoutRaw=document.getElementById("legacy_payout").value;
+  const out=document.getElementById("legacyOut");
+
+  const safetyNet=LEGACY_SAFETY_NET[acct];
+  const maxPayout=LEGACY_MAX_PAYOUT_FIRST5[acct];
+  const minRequestBalance=getLegacyMinimumRequestBalance(acct);
+
+  syncLegacyMaxPayout();
+
+  if(!balRaw || !payoutRaw){
+    out.style.display="none";
+    return;
+  }
+
+  const balance=parseFloat(balRaw);
+  const payout=parseFloat(payoutRaw);
+
+  if(!Number.isFinite(balance) || balance <= 0){
+    out.style.display="block";
+    out.innerHTML=`<div class="warn">Enter a balance greater than 0.</div>`;
+    return;
+  }
+
+  if(!Number.isFinite(payout) || payout <= 0){
+    out.style.display="block";
+    out.innerHTML=`<div class="warn">Enter a payout amount greater than 0.</div>`;
+    return;
+  }
+
+  if(payout !== maxPayout){
+    out.style.display="block";
+    out.innerHTML=`<div class="warn">Violation tool uses the max payout for this account: ${fmt0(maxPayout)}</div>`;
+    return;
+  }
+
+  const amountToSafety = Math.max(0, safetyNet - balance);
+  const amountToMinRequest = Math.max(0, minRequestBalance - balance);
+
+  let needed = 0;
+
+  if(payoutGroup === "1-5"){
+    needed = balance < safetyNet ? amountToSafety + maxPayout : maxPayout;
+  }else{
+    needed = amountToMinRequest;
+  }
+
+  out.style.display="block";
+  out.innerHTML=`
+    <h2 class="${needed===0?'ok':'warn'}">Legacy Violation Results</h2>
+
+    <div class="grid">
+      <div class="box">
+        <div class="k">Minimum Profit Needed</div>
+        <div class="v ${needed===0?'ok':'warn'}">${fmt2(needed)}</div>
+      </div>
+
+      <div class="box">
+        <div class="k">Minimum Balance To Request</div>
+        <div class="v">${fmt2(minRequestBalance)}</div>
+      </div>
+    </div>
+  `;
+}
+
+/* ===================== Legacy Regular Payouts ===================== */
+
+function syncLegacyRegularMaxPayout(){
+  const acct=document.getElementById("legacy_regular_acct").value;
+  const payoutGroup=document.getElementById("legacy_regular_payout_num").value;
+  const note=document.getElementById("legacyRegularPayoutNote");
+  const maxDisplay=document.getElementById("legacy_regular_max_display");
+
+  maxDisplay.value=getLegacyRegularMaxDisplay(acct,payoutGroup);
+
+  if(payoutGroup === "6"){
+    note.textContent="Payout 6+ is unlimited.";
+  }else{
+    note.textContent="Payouts 1-5 are capped by account max.";
+  }
+}
+
+function runLegacyRegularCalc(){
+  const acct=document.getElementById("legacy_regular_acct").value;
+  const balRaw=document.getElementById("legacy_regular_balance").value;
+  const payoutRaw=document.getElementById("legacy_regular_payout").value;
+  const payoutGroup=document.getElementById("legacy_regular_payout_num").value;
+  const out=document.getElementById("legacyRegularOut");
+
+  const safetyNet=LEGACY_SAFETY_NET[acct];
+  const maxFirst5=LEGACY_MAX_PAYOUT_FIRST5[acct];
+  const minRequestBalance=getLegacyMinimumRequestBalance(acct);
+
+  syncLegacyRegularMaxPayout();
+
+  if(!balRaw || !payoutRaw){
+    out.style.display="none";
+    return;
+  }
+
+  const balance=parseFloat(balRaw);
+  const payout=parseFloat(payoutRaw);
+
+  if(!Number.isFinite(balance) || balance <= 0){
+    out.style.display="block";
+    out.innerHTML=`<div class="warn">Enter a balance greater than 0.</div>`;
+    return;
+  }
+
+  if(!Number.isFinite(payout) || payout <= 0){
+    out.style.display="block";
+    out.innerHTML=`<div class="warn">Enter a payout amount greater than 0.</div>`;
+    return;
+  }
+
+  if(payout < MIN_PAYOUT){
+    out.style.display="block";
+    out.innerHTML=`<div class="warn">Minimum payout amount is ${fmt0(MIN_PAYOUT)}</div>`;
+    return;
+  }
+
+  if(payoutGroup !== "6" && payout > maxFirst5){
+    out.style.display="block";
+    out.innerHTML=`<div class="warn">For payouts 1-5, max payout allowed for this account is ${fmt0(maxFirst5)}</div>`;
+    return;
+  }
+
+  let targetBalance = 0;
+
+  if(payoutGroup === "1-3"){
+    targetBalance = safetyNet + payout;
+  }else{
+    targetBalance = minRequestBalance;
+  }
+
+  const needed = Math.max(0, targetBalance - balance);
+  const requestAmountDisplay = payoutGroup === "6" ? `${fmt2(payout)} (Unlimited Allowed)` : fmt2(payout);
+
+  out.style.display="block";
+  out.innerHTML=`
+    <h2 class="${needed===0?'ok':'warn'}">Legacy Regular Payout Results</h2>
+
+    <div class="grid">
+      <div class="box">
+        <div class="k">Minimum Profit Needed</div>
+        <div class="v ${needed===0?'ok':'warn'}">${fmt2(needed)}</div>
+      </div>
+
+      <div class="box">
+        <div class="k">Desired Payout</div>
+        <div class="v">${requestAmountDisplay}</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="box">
+        <div class="k">Minimum Profit Needed</div>
+        <div class="v">${getLegacyRegularMaxDisplay(acct,payoutGroup)}</div>
+      </div>
+
+      <div class="box">
+        <div class="k">Minimum Balance To Request</div>
+        <div class="v">${fmt2(targetBalance)}</div>
+      </div>
+    </div>
+  `;
+}
+
+/* ===================== Events ===================== */
+
+renderLegacyRequirementTable();
+syncLegacyMaxPayout();
+syncLegacyRegularMaxPayout();
+
+document.getElementById("legacy_acct").addEventListener("change",()=>{
+  renderLegacyRequirementTable();
+  syncLegacyMaxPayout();
+  runLegacyCalc();
+});
+document.getElementById("legacy_violation_payout_group").addEventListener("change",()=>{
+  syncLegacyMaxPayout();
+  runLegacyCalc();
+});
+document.getElementById("legacy_balance").addEventListener("input",runLegacyCalc);
+document.getElementById("legacy_payout").addEventListener("input",runLegacyCalc);
+
+document.getElementById("legacy_regular_acct").addEventListener("change",()=>{
+  syncLegacyRegularMaxPayout();
+  runLegacyRegularCalc();
+});
+document.getElementById("legacy_regular_payout_num").addEventListener("change",()=>{
+  syncLegacyRegularMaxPayout();
+  runLegacyRegularCalc();
+});
+document.getElementById("legacy_regular_balance").addEventListener("input",runLegacyRegularCalc);
+document.getElementById("legacy_regular_payout").addEventListener("input",runLegacyRegularCalc);
+
+updateModernTool();
+document.getElementById("acct").addEventListener("change",updateModernTool);
+document.getElementById("ptype").addEventListener("change",updateModernTool);
+document.getElementById("modern_balance").addEventListener("input",updateModernTool);
+document.getElementById("payout_num").addEventListener("change",()=>{
+  const payoutInput=document.getElementById("modern_payout");
+  const useMax=document.getElementById("modern_usemax").checked;
+  const setup=runModernCalcSetup();
+
+  if(useMax){
+    if(setup){
+      payoutInput.value=setup.max;
+    }
+  }
+
+  updateModernTool();
+});
+document.getElementById("modern_payout").addEventListener("input",updateModernTool);
+document.getElementById("modern_usemax").addEventListener("change",()=>{
+  const payoutInput=document.getElementById("modern_payout");
+  const useMax=document.getElementById("modern_usemax").checked;
+  const setup=runModernCalcSetup();
+
+  if(useMax){
+    if(setup){
+      payoutInput.value=setup.max;
+    }
+  }else{
+    payoutInput.value="";
+  }
+
+  updateModernTool();
+});
+</script>
+
+</body>
+</html>
