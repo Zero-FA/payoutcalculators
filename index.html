@@ -157,8 +157,7 @@ th,td{border-bottom:1px solid #223052;padding:8px;text-align:left;}
             <tr>
               <th>Account Size</th>
               <th>Safety Net</th>
-              <th>Minimum Profit Needed</th>
-              <th>Balance You'll Be At</th>
+              <th>Max Payout Amount</th>
             </tr>
           </thead>
           <tbody id="legacyRequirementTable"></tbody>
@@ -695,7 +694,6 @@ function renderLegacyRequirementTable(){
         <td>${labelMap[acct]}</td>
         <td>${fmt0(safetyNet)}</td>
         <td>${fmt0(max)}</td>
-        <td>${fmt0(balanceNeeded)}</td>
       </tr>
     `;
   }).join("");
