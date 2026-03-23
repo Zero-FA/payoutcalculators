@@ -165,15 +165,27 @@ th,td{border-bottom:1px solid #223052;padding:8px;text-align:left;}
 
         <div class="box" style="margin-top:16px">
           <div class="k" style="font-size:16px;font-weight:700;color:#ffd37a;margin-bottom:10px;">
-            Violation Formula (Payout 1-3)
+            Violation Formula (Payouts 1-3)
           </div>
           <div class="v" style="font-size:15px;font-weight:600;margin-bottom:8px;">
             <span style="color:#ffd37a;">If under Safety Net:</span>
             <span style="color:#e8eefc;"> Safety Net - Current Balance + Max Payout</span>
           </div>
-          <div class="v" style="font-size:15px;font-weight:600;">
+          <div class="v" style="font-size:15px;font-weight:600;margin-bottom:14px;">
             <span style="color:#ffd37a;">If over Safety Net:</span>
+            <span style="color:#e8eefc;"> Max Payout</span>
+          </div>
+
+          <div class="k" style="font-size:16px;font-weight:700;color:#ffd37a;margin-bottom:10px;">
+            Violation Formula (Payouts 4+)
+          </div>
+          <div class="v" style="font-size:15px;font-weight:600;margin-bottom:8px;">
+            <span style="color:#ffd37a;">Start with:</span>
             <span style="color:#e8eefc;"> Current Balance + Max Payout</span>
+          </div>
+          <div class="v" style="font-size:15px;font-weight:600;">
+            <span style="color:#ffd37a;">If that is under Minimum Request Balance:</span>
+            <span style="color:#e8eefc;"> Max Payout + amount needed to reach Minimum Request Balance</span>
           </div>
         </div>
       </div>
@@ -754,14 +766,15 @@ function runLegacyCalc(){
   }
 
   const amountToSafety = Math.max(0, safetyNet - balance);
-  const amountToMinRequest = Math.max(0, minRequestBalance - balance);
+  const base4PlusBalance = balance + maxPayout;
+  const extraNeededToMinRequestAfterMax = Math.max(0, minRequestBalance - base4PlusBalance);
 
   let needed = 0;
 
   if(payoutGroup === "1-3"){
     needed = balance < safetyNet ? amountToSafety + maxPayout : maxPayout;
   }else{
-    needed = amountToMinRequest;
+    needed = maxPayout + extraNeededToMinRequestAfterMax;
   }
 
   out.style.display="block";
