@@ -861,16 +861,12 @@ function runLegacyRegularCalc(){
     return;
   }
 
-  if(payoutGroup === "6" && (balance - payout) < 100){
-    out.style.display="block";
-    out.innerHTML=`<div class="warn">For payouts 6+, you must leave at least ${fmt0(100)} in the account after the payout request.</div>`;
-    return;
-  }
-
   let targetBalance = 0;
 
   if(payoutGroup === "1-3"){
     targetBalance = safetyNet + payout;
+  }else if(payoutGroup === "6"){
+    targetBalance = Math.max(minRequestBalance, balance + payout);
   }else{
     targetBalance = minRequestBalance;
   }
@@ -878,7 +874,7 @@ function runLegacyRegularCalc(){
   const needed = Math.max(0, targetBalance - balance);
   const requestAmountDisplay =
     payoutGroup === "6"
-      ? `${fmt2(payout)} (Allowed if at least $100 remains after payout)`
+      ? `${fmt2(payout)} (Calculated as current balance + desired payout, while still requiring at least the minimum request balance)`
       : fmt2(payout);
 
   out.style.display="block";
@@ -887,7 +883,7 @@ function runLegacyRegularCalc(){
       ? `You need to be at Safety Net + requested payout amount before requesting ${requestAmountDisplay}.`
       : payoutGroup === "4-5"
       ? `You must first reach the minimum request balance of ${fmt2(minRequestBalance)}. After that, you can request up to ${fmt2(maxFirst5)} into the safety net.`
-      : `You must first reach the minimum request balance of ${fmt2(minRequestBalance)}. After that, you can request any amount as long as at least ${fmt2(100)} remains in the account.`;
+      : `For payouts 6+, this calculator shows the math as current balance + desired payout, while still requiring at least the minimum request balance of ${fmt2(minRequestBalance)}. For this request: ${fmt2(balance)} + ${fmt2(payout)} = ${fmt2(balance + payout)}. Target balance used: ${fmt2(targetBalance)}.`;
 
   out.style.display="block";
   out.innerHTML=`
