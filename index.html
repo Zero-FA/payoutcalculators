@@ -871,7 +871,7 @@ function runLegacyRegularCalc(){
     targetBalance = minRequestBalance;
   }
 
-  const needed = Math.max(0, targetBalance - balance);
+ const needed = targetBalance - balance;
   const requestAmountDisplay =
     payoutGroup === "6"
       ? `${fmt2(payout)} (Allowed if at least $100 remains after payout)`
