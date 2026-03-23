@@ -228,11 +228,6 @@ th,td{border-bottom:1px solid #223052;padding:8px;text-align:left;}
           <label>Desired Payout Request ($)</label>
           <input id="legacy_regular_payout" type="number" step="0.01" placeholder="e.g. 1500">
         </div>
-
-        <div>
-          <label>Minimum Profit Needed</label>
-          <input id="legacy_regular_max_display" type="text" readonly>
-        </div>
       </div>
 
       <div class="note" id="legacyRegularPayoutNote">Payouts 1-3 are capped by account max. Payouts 4+ is unlimited.</div>
@@ -797,9 +792,7 @@ function syncLegacyRegularMaxPayout(){
   const acct=document.getElementById("legacy_regular_acct").value;
   const payoutGroup=document.getElementById("legacy_regular_payout_num").value;
   const note=document.getElementById("legacyRegularPayoutNote");
-  const maxDisplay=document.getElementById("legacy_regular_max_display");
 
-  maxDisplay.value=getLegacyRegularMaxDisplay(acct,payoutGroup);
 
   if(payoutGroup === "6"){
     note.textContent="Payouts 4+ is unlimited.";
@@ -873,12 +866,6 @@ function runLegacyRegularCalc(){
         <div class="k">Minimum Profit Needed</div>
         <div class="v ${needed===0?'ok':'warn'}">${fmt2(needed)}</div>
       </div>
-
-      
-    </div>
-
-    <div class="grid" style="grid-template-columns:1fr 1fr;">
-      
 
       <div class="box">
         <div class="k">Balance You'll Be At</div>
