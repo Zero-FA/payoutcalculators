@@ -231,7 +231,7 @@ th,td{border-bottom:1px solid #223052;padding:8px;text-align:left;}
         </div>
       </div>
 
-      <div class="note" id="legacyRegularPayoutNote">Payouts 1-3 are capped by account max. Payouts 4+ is unlimited.</div>
+      <div class="note" id="legacyRegularPayoutNote">Payouts 1-3 are capped by account max. Payouts 4-5 must reach minimum request balance first, then can request up to the account max into the safety net. Payouts 6+ must reach minimum request balance first, then can request all except $100.</div>
 
       <div id="legacyRegularOut" class="results" style="display:none"></div>
 
@@ -803,15 +803,15 @@ function runLegacyCalc(){
 /* ===================== Legacy Regular Payouts ===================== */
 
 function syncLegacyRegularMaxPayout(){
-  const acct=document.getElementById("legacy_regular_acct").value;
   const payoutGroup=document.getElementById("legacy_regular_payout_num").value;
   const note=document.getElementById("legacyRegularPayoutNote");
 
-
-  if(payoutGroup === "6"){
-    note.textContent="Payouts 4+ is unlimited.";
-  }else{
+  if(payoutGroup === "1-3"){
     note.textContent="Payouts 1-3 are capped by account max.";
+  }else if(payoutGroup === "4-5"){
+    note.textContent="Payouts 4-5 must reach minimum request balance first, then can request up to the account max into the safety net.";
+  }else{
+    note.textContent="Payouts 6+ must reach minimum request balance first, then can request all except $100.";
   }
 }
 
@@ -854,9 +854,16 @@ function runLegacyRegularCalc(){
     return;
   }
 
-  if(payoutGroup !== "6" && payout > maxFirst5){
+  if((payoutGroup === "1-3" || payoutGroup === "4-5") && payout > maxFirst5){
     out.style.display="block";
-    out.innerHTML=`<div class="warn">For payouts 1-3, max payout allowed for this account is ${fmt0(maxFirst5)}</div>`;
+    const label = payoutGroup === "4-5" ? "For payouts 4-5" : "For payouts 1-3";
+    out.innerHTML=`<div class="warn">${label}, max payout allowed for this account is ${fmt0(maxFirst5)}</div>`;
+    return;
+  }
+
+  if(payoutGroup === "6" && (balance - payout) < 100){
+    out.style.display="block";
+    out.innerHTML=`<div class="warn">For payouts 6+, you must leave at least ${fmt0(100)} in the account after the payout request.</div>`;
     return;
   }
 
@@ -869,7 +876,18 @@ function runLegacyRegularCalc(){
   }
 
   const needed = Math.max(0, targetBalance - balance);
-  const requestAmountDisplay = payoutGroup === "6" ? `${fmt2(payout)} (Unlimited Allowed)` : fmt2(payout);
+  const requestAmountDisplay =
+    payoutGroup === "6"
+      ? `${fmt2(payout)} (Allowed if at least $100 remains after payout)`
+      : fmt2(payout);
+
+  out.style.display="block";
+  const resultNote =
+    payoutGroup === "1-3"
+      ? `You need to be at Safety Net + requested payout amount before requesting ${requestAmountDisplay}.`
+      : payoutGroup === "4-5"
+      ? `You must first reach the minimum request balance of ${fmt2(minRequestBalance)}. After that, you can request up to ${fmt2(maxFirst5)} into the safety net.`
+      : `You must first reach the minimum request balance of ${fmt2(minRequestBalance)}. After that, you can request any amount as long as at least ${fmt2(100)} remains in the account.`;
 
   out.style.display="block";
   out.innerHTML=`
@@ -886,6 +904,8 @@ function runLegacyRegularCalc(){
         <div class="v">${fmt2(balance + needed)}</div>
       </div>
     </div>
+
+    <div class="note">${resultNote}</div>
   `;
 }
 
@@ -955,9 +975,3 @@ document.getElementById("modern_usemax").addEventListener("change",()=>{
 
 </body>
 </html>
-
-
-UPDATED RULES:
-1-3: Normal
-4-5: Must reach minimum request balance, then can request max payout into safety net
-6+: Must reach minimum request balance, then can request all except $100
