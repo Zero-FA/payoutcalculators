@@ -667,6 +667,16 @@ const LEGACY_MAX_PAYOUT_FIRST5={
   "100k_static":1000
 };
 
+const LEGACY_START_BALANCE={
+  "25k":25000,
+  "50k":50000,
+  "100k":100000,
+  "150k":150000,
+  "250k":250000,
+  "300k":300000,
+  "100k_static":100000
+};
+
 function getLegacyMinimumRequestBalance(acct){
   const safetyNet=LEGACY_SAFETY_NET[acct];
   return safetyNet + MIN_PAYOUT;
@@ -825,6 +835,7 @@ function runLegacyRegularCalc(){
   const safetyNet=LEGACY_SAFETY_NET[acct];
   const maxFirst5=LEGACY_MAX_PAYOUT_FIRST5[acct];
   const minRequestBalance=getLegacyMinimumRequestBalance(acct);
+  const startBalance=LEGACY_START_BALANCE[acct];
 
   syncLegacyRegularMaxPayout();
 
@@ -861,29 +872,27 @@ function runLegacyRegularCalc(){
     return;
   }
 
-  let targetBalance = 0;
+  let needed = 0;
+  let balanceAt = 0;
+  let resultNote = "";
 
   if(payoutGroup === "1-3"){
-    targetBalance = safetyNet + payout;
-  }else if(payoutGroup === "6"){
-    targetBalance = Math.max(minRequestBalance, balance + payout);
+    const targetBalance = safetyNet + payout;
+    needed = Math.max(0, targetBalance - balance);
+    balanceAt = balance + needed;
+    resultNote = `You need to be at Safety Net + requested payout amount before requesting ${fmt2(payout)}.`;
+  }else if(payoutGroup === "4-5"){
+    const targetBalance = minRequestBalance;
+    needed = Math.max(0, targetBalance - balance);
+    balanceAt = balance + needed;
+    resultNote = `You must first reach the minimum request balance of ${fmt2(minRequestBalance)}. After that, you can request up to ${fmt2(maxFirst5)} into the safety net.`;
   }else{
-    targetBalance = minRequestBalance;
+    const currentProfit = balance - startBalance;
+    const profitTarget = payout + 100;
+    needed = Math.max(0, profitTarget - currentProfit);
+    balanceAt = startBalance + profitTarget;
+    resultNote = `For payouts 6+, this uses: current profit = current balance - starting balance, and profit target = requested payout + ${fmt2(100)} left in account. Current profit: ${fmt2(balance)} - ${fmt2(startBalance)} = ${fmt2(currentProfit)}. Profit target: ${fmt2(payout)} + ${fmt2(100)} = ${fmt2(profitTarget)}. Remaining profit needed: ${fmt2(profitTarget)} - ${fmt2(currentProfit)} = ${fmt2(needed)}. Balance you'll be at: ${fmt2(startBalance)} + ${fmt2(profitTarget)} = ${fmt2(balanceAt)}.`;
   }
-
-  const needed = Math.max(0, targetBalance - balance);
-  const requestAmountDisplay =
-    payoutGroup === "6"
-      ? `${fmt2(payout)} (Calculated as current balance + desired payout, while still requiring at least the minimum request balance)`
-      : fmt2(payout);
-
-  out.style.display="block";
-  const resultNote =
-    payoutGroup === "1-3"
-      ? `You need to be at Safety Net + requested payout amount before requesting ${requestAmountDisplay}.`
-      : payoutGroup === "4-5"
-      ? `You must first reach the minimum request balance of ${fmt2(minRequestBalance)}. After that, you can request up to ${fmt2(maxFirst5)} into the safety net.`
-      : `For payouts 6+, this calculator shows the math as current balance + desired payout, while still requiring at least the minimum request balance of ${fmt2(minRequestBalance)}. For this request: ${fmt2(balance)} + ${fmt2(payout)} = ${fmt2(balance + payout)}. Target balance used: ${fmt2(targetBalance)}.`;
 
   out.style.display="block";
   out.innerHTML=`
@@ -897,7 +906,7 @@ function runLegacyRegularCalc(){
 
       <div class="box">
         <div class="k">Balance You'll Be At</div>
-        <div class="v">${fmt2(balance + needed)}</div>
+        <div class="v">${fmt2(balanceAt)}</div>
       </div>
     </div>
 
