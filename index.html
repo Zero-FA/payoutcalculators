@@ -667,6 +667,16 @@ const LEGACY_MAX_PAYOUT_FIRST5={
   "100k_static":1000
 };
 
+const LEGACY_START_BALANCE={
+  "25k":25000,
+  "50k":50000,
+  "100k":100000,
+  "150k":150000,
+  "250k":250000,
+  "300k":300000,
+  "100k_static":100000
+};
+
 function getLegacyMinimumRequestBalance(acct){
   const safetyNet=LEGACY_SAFETY_NET[acct];
   return safetyNet + MIN_PAYOUT;
@@ -825,7 +835,7 @@ function runLegacyRegularCalc(){
   const safetyNet=LEGACY_SAFETY_NET[acct];
   const maxFirst5=LEGACY_MAX_PAYOUT_FIRST5[acct];
   const minRequestBalance=getLegacyMinimumRequestBalance(acct);
-  const startBalance=LEGACY_START_BALANCE[acct];
+  const startBalance=(LEGACY_START_BALANCE && LEGACY_START_BALANCE[acct]) ? LEGACY_START_BALANCE[acct] : 0;
 
   syncLegacyRegularMaxPayout();
 
