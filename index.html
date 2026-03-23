@@ -835,7 +835,7 @@ function runLegacyRegularCalc(){
   const safetyNet=LEGACY_SAFETY_NET[acct];
   const maxFirst5=LEGACY_MAX_PAYOUT_FIRST5[acct];
   const minRequestBalance=getLegacyMinimumRequestBalance(acct);
-  const startBalance=(LEGACY_START_BALANCE && LEGACY_START_BALANCE[acct]) ? LEGACY_START_BALANCE[acct] : 0;
+  const startBalance=LEGACY_START_BALANCE[acct] || 0;
 
   syncLegacyRegularMaxPayout();
 
@@ -919,6 +919,47 @@ function runLegacyRegularCalc(){
     <div style="margin-top:10px;">${resultNote}</div>
   `;
 }
+
+function initializeCalculator(){
+  renderLiveRequirements();
+  renderModernPayoutTable();
+  renderLegacyRequirementTable();
+  syncLegacyMaxPayout();
+  syncLegacyRegularMaxPayout();
+
+  document.getElementById("acct").addEventListener("change", updateModernTool);
+  document.getElementById("ptype").addEventListener("change", updateModernTool);
+  document.getElementById("modern_balance").addEventListener("input", renderModernNeed);
+  document.getElementById("payout_num").addEventListener("change", updateModernTool);
+  document.getElementById("modern_payout").addEventListener("input", renderModernNeed);
+  document.getElementById("modern_usemax").addEventListener("change", updateModernTool);
+
+  document.getElementById("legacy_acct").addEventListener("change", ()=>{
+    syncLegacyMaxPayout();
+    runLegacyCalc();
+  });
+  document.getElementById("legacy_violation_payout_group").addEventListener("change", ()=>{
+    syncLegacyMaxPayout();
+    runLegacyCalc();
+  });
+  document.getElementById("legacy_balance").addEventListener("input", runLegacyCalc);
+
+  document.getElementById("legacy_regular_acct").addEventListener("change", ()=>{
+    syncLegacyRegularMaxPayout();
+    runLegacyRegularCalc();
+  });
+  document.getElementById("legacy_regular_payout_num").addEventListener("change", ()=>{
+    syncLegacyRegularMaxPayout();
+    runLegacyRegularCalc();
+  });
+  document.getElementById("legacy_regular_balance").addEventListener("input", runLegacyRegularCalc);
+  document.getElementById("legacy_regular_payout").addEventListener("input", runLegacyRegularCalc);
+
+  updateModernTool();
+}
+
+initializeCalculator();
+
 </script>
 
 </body>
