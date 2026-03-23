@@ -521,7 +521,7 @@ function renderModernNeed(){
     out.style.display="block";
     out.innerHTML=`
       <h2>Payout Goal</h2>
-      <div class="grid">
+      <div class="grid" style="grid-template-columns:1fr 1fr;">
         <div class="box">
           <div class="k">Minimum Profit Needed</div>
           <div class="v">${fmt2(payoutAmount)}</div>
@@ -533,7 +533,7 @@ function renderModernNeed(){
         </div>
       </div>
 
-      <div class="grid">
+      <div class="grid" style="grid-template-columns:1fr 1fr;">
         <div class="box">
           <div class="k">Minimum Profit Needed For This Payout Number</div>
           <div class="v">${fmt0(max)}</div>
@@ -558,7 +558,7 @@ function renderModernNeed(){
   out.innerHTML=`
     <h2 class="${atOrOverSafety?'ok':'warn'}">Payout Goal</h2>
 
-    <div class="grid">
+    <div class="grid" style="grid-template-columns:1fr 1fr;">
       <div class="box">
         <div class="k">Minimum Profit Needed</div>
         <div class="v ${atOrOverSafety?'ok':'warn'}">${fmt2(needed)}</div>
@@ -570,7 +570,7 @@ function renderModernNeed(){
       </div>
     </div>
 
-    <div class="grid">
+    <div class="grid" style="grid-template-columns:1fr 1fr;">
       <div class="box">
         <div class="k">Minimum Profit Needed For This Payout Number</div>
         <div class="v ${atOrOverSafety?'ok':'warn'}">${fmt0(payoutNumberNeed)}</div>
@@ -768,7 +768,7 @@ function runLegacyCalc(){
   out.innerHTML=`
     <h2 class="${needed===0?'ok':'warn'}">Legacy Violation Results</h2>
 
-    <div class="grid">
+    <div class="grid" style="grid-template-columns:1fr 1fr;">
       <div class="box">
         <div class="k">Minimum Profit Needed</div>
         <div class="v ${needed===0?'ok':'warn'}">${fmt2(needed)}</div>
@@ -859,7 +859,7 @@ function runLegacyRegularCalc(){
   out.innerHTML=`
     <h2 class="${needed===0?'ok':'warn'}">Legacy Regular Payout Results</h2>
 
-    <div class="grid">
+    <div class="grid" style="grid-template-columns:1fr 1fr;">
       <div class="box">
         <div class="k">Minimum Profit Needed</div>
         <div class="v ${needed===0?'ok':'warn'}">${fmt2(needed)}</div>
@@ -868,7 +868,7 @@ function runLegacyRegularCalc(){
       
     </div>
 
-    <div class="grid">
+    <div class="grid" style="grid-template-columns:1fr 1fr;">
       
 
       <div class="box">
