@@ -158,7 +158,7 @@ th,td{border-bottom:1px solid #223052;padding:8px;text-align:left;}
               <th>Account Size</th>
               <th>Safety Net</th>
               <th>Minimum Profit Needed</th>
-              <th>Minimum Profit Needed Balance</th>
+              <th>Balance You'll Be At</th>
             </tr>
           </thead>
           <tbody id="legacyRequirementTable"></tbody>
@@ -777,8 +777,8 @@ function runLegacyCalc(){
       </div>
 
       <div class="box">
-        <div class="k">Minimum Balance To Request</div>
-        <div class="v">${fmt2(minRequestBalance)}</div>
+        <div class="k">Balance You'll Be At</div>
+        <div class="v">${fmt2(balance + needed)}</div>
       </div>
     </div>
   `;
@@ -875,13 +875,13 @@ function runLegacyRegularCalc(){
 
     <div class="grid">
       <div class="box">
-        <div class="k">Minimum Profit Needed</div>
-        <div class="v">${getLegacyRegularMaxDisplay(acct,payoutGroup)}</div>
+        <div class="k">Cash Amount To Make</div>
+        <div class="v ${needed===0?'ok':'warn'}">${fmt2(needed)}</div>
       </div>
 
       <div class="box">
-        <div class="k">Minimum Balance To Request</div>
-        <div class="v">${fmt2(targetBalance)}</div>
+        <div class="k">Balance You'll Be At</div>
+        <div class="v">${fmt2(balance + needed)}</div>
       </div>
     </div>
   `;
