@@ -158,7 +158,6 @@ th,td{border-bottom:1px solid #223052;padding:8px;text-align:left;}
               <th>Account Size</th>
               <th>Safety Net</th>
               <th>Max Request Balance</th>
-              <th>Max Payout</th>
             </tr>
           </thead>
           <tbody id="legacyRequirementTable"></tbody>
@@ -698,7 +697,6 @@ function renderLegacyRequirementTable(){
         <td>${labelMap[acct]}</td>
         <td>${fmt0(safetyNet)}</td>
         <td>${fmt0(balanceNeeded)}</td>
-        <td>${fmt0(max)}</td>
       </tr>
     `;
   }).join("");
@@ -763,12 +761,22 @@ function runLegacyCalc(){
   const extraNeededToMinRequestAfterMax = Math.max(0, minRequestBalance - base4PlusBalance);
 
   let needed = 0;
+  let mathLine = "";
 
   if(payoutGroup === "1-3"){
-    needed = balance < safetyNet ? amountToSafety + maxPayout : maxPayout;
+    if(balance < safetyNet){
+      needed = amountToSafety + maxPayout;
+      mathLine = `${fmt2(amountToSafety)} to reach Safety Net + ${fmt2(maxPayout)} max payout = ${fmt2(needed)}`;
+    }else{
+      needed = maxPayout;
+      mathLine = `${fmt2(maxPayout)} max payout needed = ${fmt2(needed)}`;
+    }
   }else{
     needed = maxPayout + extraNeededToMinRequestAfterMax;
+    mathLine = `${fmt2(maxPayout)} max payout + ${fmt2(extraNeededToMinRequestAfterMax)} extra to reach min request balance = ${fmt2(needed)}`;
   }
+
+  const balanceAt = balance + needed;
 
   out.style.display="block";
   out.innerHTML=`
@@ -778,11 +786,13 @@ function runLegacyCalc(){
       <div class="box">
         <div class="k">Minimum Profit Needed</div>
         <div class="v ${needed===0?'ok':'warn'}">${fmt2(needed)}</div>
+        <div class="note">Math: ${mathLine}</div>
       </div>
 
       <div class="box">
         <div class="k">Balance You'll Be At</div>
-        <div class="v">${fmt2(balance + needed)}</div>
+        <div class="v">${fmt2(balanceAt)}</div>
+        <div class="note">${fmt2(balance)} current balance + ${fmt2(needed)} needed profit = ${fmt2(balanceAt)}</div>
       </div>
     </div>
   `;
