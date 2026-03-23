@@ -129,8 +129,8 @@ th,td{border-bottom:1px solid #223052;padding:8px;text-align:left;}
         <div>
           <label>Legacy Payout Number</label>
           <select id="legacy_violation_payout_group">
-            <option value="1-5" selected>Payouts 1-5</option>
-            <option value="6">Payout 6+</option>
+            <option value="1-3" selected>Payouts 1-3</option>
+            <option value="6">Payouts 4+</option>
           </select>
         </div>
 
@@ -165,7 +165,7 @@ th,td{border-bottom:1px solid #223052;padding:8px;text-align:left;}
 
         <div class="box" style="margin-top:16px">
           <div class="k" style="font-size:16px;font-weight:700;color:#ffd37a;margin-bottom:10px;">
-            Violation Formula (Payout 1-5)
+            Violation Formula (Payout 1-3)
           </div>
           <div class="v" style="font-size:15px;font-weight:600;margin-bottom:8px;">
             <span style="color:#ffd37a;">If under Safety Net:</span>
@@ -205,7 +205,7 @@ th,td{border-bottom:1px solid #223052;padding:8px;text-align:left;}
           <select id="legacy_regular_payout_num">
             <option value="1-3" selected>Payouts 1-3</option>
             <option value="4-5">Payouts 4-5</option>
-            <option value="6">Payout 6+</option>
+            <option value="6">Payouts 4+</option>
           </select>
         </div>
 
@@ -227,7 +227,7 @@ th,td{border-bottom:1px solid #223052;padding:8px;text-align:left;}
         </div>
       </div>
 
-      <div class="note" id="legacyRegularPayoutNote">Payouts 1-5 are capped by account max. Payout 6+ is unlimited.</div>
+      <div class="note" id="legacyRegularPayoutNote">Payouts 1-3 are capped by account max. Payouts 4+ is unlimited.</div>
 
       <div id="legacyRegularOut" class="results" style="display:none"></div>
 
@@ -758,7 +758,7 @@ function runLegacyCalc(){
 
   let needed = 0;
 
-  if(payoutGroup === "1-5"){
+  if(payoutGroup === "1-3"){
     needed = balance < safetyNet ? amountToSafety + maxPayout : maxPayout;
   }else{
     needed = amountToMinRequest;
@@ -793,9 +793,9 @@ function syncLegacyRegularMaxPayout(){
   maxDisplay.value=getLegacyRegularMaxDisplay(acct,payoutGroup);
 
   if(payoutGroup === "6"){
-    note.textContent="Payout 6+ is unlimited.";
+    note.textContent="Payouts 4+ is unlimited.";
   }else{
-    note.textContent="Payouts 1-5 are capped by account max.";
+    note.textContent="Payouts 1-3 are capped by account max.";
   }
 }
 
@@ -840,7 +840,7 @@ function runLegacyRegularCalc(){
 
   if(payoutGroup !== "6" && payout > maxFirst5){
     out.style.display="block";
-    out.innerHTML=`<div class="warn">For payouts 1-5, max payout allowed for this account is ${fmt0(maxFirst5)}</div>`;
+    out.innerHTML=`<div class="warn">For payouts 1-3, max payout allowed for this account is ${fmt0(maxFirst5)}</div>`;
     return;
   }
 
