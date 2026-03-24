@@ -881,15 +881,16 @@ function runLegacyRegularCalc(){
     targetBalance = safetyNet + payout;
     needed = Math.max(0, targetBalance - balance);
     resultNote = `You need to be at Safety Net + requested payout amount before requesting ${requestAmountDisplay}.`;
-  }else if(payoutGroup === "6"){
-    const currentProfit = balance - startBalance;
-    const profitTarget = payout + 100;
+  }else if(payoutGroup === "4-5" || payoutGroup === "6"){
+    targetBalance = startBalance + payout + 100;
+    needed = Math.max(0, targetBalance - balance);
 
-    needed = Math.max(0, profitTarget - currentProfit);
-    targetBalance = startBalance + profitTarget;
-    requestAmountDisplay = `${fmt2(payout)} (Take requested payout and leave ${fmt2(100)} in account)`;
-
-    resultNote = `For payouts 6+, this shows how much more profit you need from where you are now. Current profit: ${fmt2(balance)} - ${fmt2(startBalance)} = ${fmt2(currentProfit)}. Profit target: ${fmt2(payout)} + ${fmt2(100)} = ${fmt2(profitTarget)}. Remaining profit needed: ${fmt2(profitTarget)} - ${fmt2(currentProfit)} = ${fmt2(needed)}. Balance you'll be at: ${fmt2(startBalance)} + ${fmt2(profitTarget)} = ${fmt2(targetBalance)}.`;
+    if(payoutGroup === "6"){
+      requestAmountDisplay = `${fmt2(payout)} (Take requested payout and leave ${fmt2(100)} above starting balance in account)`;
+      resultNote = `For payouts 6+, the minimum required balance is the same as payouts 4-5 for the requested amount. You must have your starting balance + requested payout + ${fmt2(100)} before requesting.`;
+    }else{
+      resultNote = `For payouts 4-5, you must have your starting balance + requested payout + ${fmt2(100)} before requesting.`;
+    }
   }else{
     targetBalance = minRequestBalance;
     needed = Math.max(0, targetBalance - balance);
