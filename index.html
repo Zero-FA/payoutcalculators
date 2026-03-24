@@ -250,7 +250,7 @@ th,td{border-bottom:1px solid #223052;padding:8px;text-align:left;}
             <tr><td>$25k</td><td>$26,100</td><td>$1,500</td></tr>
             <tr><td>$50k</td><td>$52,100</td><td>$2,000</td></tr>
             <tr><td>$100k</td><td>$102,600</td><td>$2,500</td></tr>
-            <tr><td>$150k</td><td>$154,100</td><td>$2,750</td></tr>
+            <tr><td>$150k</td><td>$154,600</td><td>$2,750</td></tr>
             <tr><td>$250k</td><td>$256,100</td><td>$3,000</td></tr>
             <tr><td>$300k</td><td>$307,100</td><td>$3,500</td></tr>
             <tr><td>$100k Static</td><td>$102,100</td><td>$1,000</td></tr>
@@ -651,7 +651,7 @@ const LEGACY_SAFETY_NET={
   "25k":26100,
   "50k":52100,
   "100k":102600,
-  "150k":154100,
+  "150k":154600,
   "250k":256100,
   "300k":307100,
   "100k_static":102100
@@ -881,17 +881,15 @@ function runLegacyRegularCalc(){
     targetBalance = safetyNet + payout;
     needed = Math.max(0, targetBalance - balance);
     resultNote = `You need to be at Safety Net + requested payout amount before requesting ${requestAmountDisplay}.`;
-  }else if(payoutGroup === "4-5" || payoutGroup === "6"){
-    const requestedBalance = startBalance + payout + 100;
-    targetBalance = Math.max(minRequestBalance, requestedBalance);
-    needed = Math.max(0, targetBalance - balance);
+  }else if(payoutGroup === "6"){
+    const currentProfit = balance - startBalance;
+    const profitTarget = payout + 100;
 
-    if(payoutGroup === "6"){
-      requestAmountDisplay = `${fmt2(payout)} (Take requested payout and leave ${fmt2(100)} above starting balance in account)`;
-      resultNote = `For payouts 6+, you must first reach the minimum request balance of ${fmt2(minRequestBalance)}. After that, you can request any amount as long as the request still leaves ${fmt2(100)} above starting balance, so the required balance is whichever is higher: minimum request balance or starting balance + requested payout + ${fmt2(100)}.`;
-    }else{
-      resultNote = `For payouts 4-5, you must first reach the minimum request balance of ${fmt2(minRequestBalance)}. The required balance is whichever is higher: minimum request balance or starting balance + requested payout + ${fmt2(100)}.`;
-    }
+    needed = Math.max(0, profitTarget - currentProfit);
+    targetBalance = startBalance + profitTarget;
+    requestAmountDisplay = `${fmt2(payout)} (Take requested payout and leave ${fmt2(100)} in account)`;
+
+    resultNote = `For payouts 6+, this shows how much more profit you need from where you are now. Current profit: ${fmt2(balance)} - ${fmt2(startBalance)} = ${fmt2(currentProfit)}. Profit target: ${fmt2(payout)} + ${fmt2(100)} = ${fmt2(profitTarget)}. Remaining profit needed: ${fmt2(profitTarget)} - ${fmt2(currentProfit)} = ${fmt2(needed)}. Balance you'll be at: ${fmt2(startBalance)} + ${fmt2(profitTarget)} = ${fmt2(targetBalance)}.`;
   }else{
     targetBalance = minRequestBalance;
     needed = Math.max(0, targetBalance - balance);
