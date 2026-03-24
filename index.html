@@ -882,14 +882,15 @@ function runLegacyRegularCalc(){
     needed = Math.max(0, targetBalance - balance);
     resultNote = `You need to be at Safety Net + requested payout amount before requesting ${requestAmountDisplay}.`;
   }else if(payoutGroup === "4-5" || payoutGroup === "6"){
-    targetBalance = startBalance + payout + 100;
+    const requestedBalance = startBalance + payout + 100;
+    targetBalance = Math.max(minRequestBalance, requestedBalance);
     needed = Math.max(0, targetBalance - balance);
 
     if(payoutGroup === "6"){
       requestAmountDisplay = `${fmt2(payout)} (Take requested payout and leave ${fmt2(100)} above starting balance in account)`;
-      resultNote = `For payouts 6+, the minimum required balance is the same as payouts 4-5 for the requested amount. You must have your starting balance + requested payout + ${fmt2(100)} before requesting.`;
+      resultNote = `For payouts 6+, you must first reach the minimum request balance of ${fmt2(minRequestBalance)}. After that, you can request any amount as long as the request still leaves ${fmt2(100)} above starting balance, so the required balance is whichever is higher: minimum request balance or starting balance + requested payout + ${fmt2(100)}.`;
     }else{
-      resultNote = `For payouts 4-5, you must have your starting balance + requested payout + ${fmt2(100)} before requesting.`;
+      resultNote = `For payouts 4-5, you must first reach the minimum request balance of ${fmt2(minRequestBalance)}. The required balance is whichever is higher: minimum request balance or starting balance + requested payout + ${fmt2(100)}.`;
     }
   }else{
     targetBalance = minRequestBalance;
