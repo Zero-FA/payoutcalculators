@@ -1,10 +1,10 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>Payout Request Calculator</title>
-
 <style>
 :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
 *{box-sizing:border-box;}
@@ -99,229 +99,200 @@ th,td{border-bottom:1px solid #1b2744;padding:8px;text-align:left;}
 }
 </style>
 </head>
-
 <body>
 <div class="card">
-
-  <h1 style="text-align:center; font-size:28px; margin-bottom:18px; color:#d4af37;">
+<h1 style="text-align:center; font-size:28px; margin-bottom:18px; color:#d4af37;">
     Apex Trader Funding Payout Calculators
   </h1>
-
-  <!-- ===================== Legacy Violation Tool ===================== -->
-  <details class="section" id="legacyViolationTool">
-    <summary>Legacy Payout Calculator (Violation)</summary>
-    <div class="section-body">
-
-      <div class="row">
-        <div>
-          <label>Legacy Account Size</label>
-          <select id="legacy_acct">
-            <option value="25k">$25k Account</option>
-            <option value="50k" selected>$50k Account</option>
-            <option value="100k">$100k Account</option>
-            <option value="150k">$150k Account</option>
-            <option value="250k">$250k Account</option>
-            <option value="300k">$300k Account</option>
-            <option value="100k_static">$100k Static</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Legacy Payout Number</label>
-          <select id="legacy_violation_payout_group">
-            <option value="1-3" selected>Payouts 1-3</option>
-            <option value="6">Payouts 4+</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Current Balance (Or after violation)</label>
-          <input id="legacy_balance" type="number" step="0.01" placeholder="e.g. 52600.00">
-        </div>
-      </div>
-
-      <div class="row">
-        <div>
-          <label>Minimum Profit Needed ($)</label>
-          <input id="legacy_payout" type="number" step="0.01" readonly>
-          <div class="note" id="legacyViolationPayoutNote">Violation tool uses max payout automatically.</div>
-        </div>
-      </div>
-
-      <div id="legacyOut" class="results" style="display:none"></div>
-
-      <div class="results" style="margin-top:14px;">
-        <h2>Legacy – Minimum Profit Needed Requirements</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Account Size</th>
-              <th>Safety Net</th>
-              <th>Max Request Balance</th>
-              <th>Max Payout Amount</th>
-            </tr>
-          </thead>
-          <tbody id="legacyRequirementTable"></tbody>
-        </table>
-
-        <div class="box" style="margin-top:16px">
-          <div class="k" style="font-size:16px;font-weight:700;color:#ffd37a;margin-bottom:10px;">
+<!-- ===================== Legacy Violation Tool ===================== -->
+<details class="section" id="legacyViolationTool">
+<summary>Legacy Payout Calculator (Violation)</summary>
+<div class="section-body">
+<div class="row">
+<div>
+<label>Legacy Account Size</label>
+<select id="legacy_acct">
+<option value="25k">$25k Account</option>
+<option selected="" value="50k">$50k Account</option>
+<option value="100k">$100k Account</option>
+<option value="150k">$150k Account</option>
+<option value="250k">$250k Account</option>
+<option value="300k">$300k Account</option>
+<option value="100k_static">$100k Static</option>
+</select>
+</div>
+<div>
+<label>Legacy Payout Number</label>
+<select id="legacy_violation_payout_group">
+<option selected="" value="1-3">Payouts 1-3</option>
+<option value="6">Payouts 4+</option>
+</select>
+</div>
+<div>
+<label>Current Balance (Or after violation)</label>
+<input id="legacy_balance" placeholder="e.g. 52600.00" step="0.01" type="number"/>
+</div>
+</div>
+<div class="row">
+<div>
+<label>Minimum Profit Needed<br>Balance You'll Be At ($)</label>
+<input id="legacy_payout" readonly="" step="0.01" type="number"/>
+<div class="note" id="legacyViolationPayoutNote">Violation tool uses max payout automatically.</div>
+</div>
+</div>
+<div class="results" id="legacyOut" style="display:none"></div>
+<div class="results" style="margin-top:14px;">
+<h2>Legacy – Minimum Profit Needed<br>Balance You'll Be At Requirements</h2>
+<table>
+<thead>
+<tr>
+<th>Account Size</th>
+<th>Safety Net</th>
+<th>Max Request Balance</th>
+<th>Max Payout Amount</th>
+</tr>
+</thead>
+<tbody id="legacyRequirementTable"></tbody>
+</table>
+<div class="box" style="margin-top:16px">
+<div class="k" style="font-size:16px;font-weight:700;color:#ffd37a;margin-bottom:10px;">
             Min Balance Needed after Violation (Payouts 1-3)
           </div>
-          <div class="v" style="font-size:15px;font-weight:600;margin-bottom:8px;">
-            <span style="color:#ffd37a;">If under Safety Net:</span>
-            <span style="color:#e8eefc;"> Safety Net - Current Balance + Max Payout</span>
-          </div>
-          <div class="v" style="font-size:15px;font-weight:600;margin-bottom:14px;">
-            <span style="color:#ffd37a;">If over Safety Net:</span>
-            <span style="color:#e8eefc;"> Current Balance + Max Payout</span>
-          </div>
-
-          <div class="k" style="font-size:16px;font-weight:700;color:#ffd37a;margin-bottom:10px;">
+<div class="v" style="font-size:15px;font-weight:600;margin-bottom:8px;">
+<span style="color:#ffd37a;">If under Safety Net:</span>
+<span style="color:#e8eefc;"> Safety Net - Current Balance + Max Payout</span>
+</div>
+<div class="v" style="font-size:15px;font-weight:600;margin-bottom:14px;">
+<span style="color:#ffd37a;">If over Safety Net:</span>
+<span style="color:#e8eefc;"> Current Balance + Max Payout</span>
+</div>
+<div class="k" style="font-size:16px;font-weight:700;color:#ffd37a;margin-bottom:10px;">
             Min Balance Needed after Violation (Payouts 4+)
           </div>
-          <div class="v" style="font-size:15px;font-weight:600;margin-bottom:8px;">
-            <span style="color:#ffd37a;">Over/Under Safety Net:</span>
-            <span style="color:#e8eefc;"> Current Balance + Max Payout + Amount needed to meet Min Request Balance</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </details>
-
-  <!-- ===================== Legacy Regular Payout Tool ===================== -->
-  <details class="section" id="legacyRegularTool">
-    <summary>Legacy Payout Calculator (No Violation)</summary>
-    <div class="section-body">
-
-      <div class="row">
-        <div>
-          <label>Legacy Account Size</label>
-          <select id="legacy_regular_acct">
-            <option value="25k">$25k Account</option>
-            <option value="50k" selected>$50k Account</option>
-            <option value="100k">$100k Account</option>
-            <option value="150k">$150k Account</option>
-            <option value="250k">$250k Account</option>
-            <option value="300k">$300k Account</option>
-            <option value="100k_static">$100k Static</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Legacy Payout Number</label>
-          <select id="legacy_regular_payout_num">
-            <option value="1-3" selected>Payouts 1-3</option>
-            <option value="4-5">Payouts 4-5</option>
-            <option value="6">Payouts 6+</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Current Balance</label>
-          <input id="legacy_regular_balance" type="number" step="0.01" placeholder="e.g. 52600.00">
-        </div>
-      </div>
-
-      <div class="row">
-        <div>
-          <label>Desired Payout Request ($)</label>
-          <input id="legacy_regular_payout" type="number" step="0.01" placeholder="e.g. 1500">
-        </div>
-      </div>
-
-      <div class="note" id="legacyRegularPayoutNote">Payouts 1-3 are capped by account max. Payouts 4-5 must reach minimum request balance first, then can request up to the account max into the safety net. Payouts 6+ must reach minimum request balance first, then can request all except $100.</div>
-
-      <div id="legacyRegularOut" class="results" style="display:none"></div>
-
-      <div class="results" style="margin-top:14px;">
-        <h2>Legacy – Maximum Payout Table</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Account Size</th>
-              <th>Safety Net</th>
-              <th>Min Request Balance</th>
-              <th>Max Payout Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>$25k</td><td>$26,100</td><td>$26,600</td><td>$1,500</td></tr>
-            <tr><td>$50k</td><td>$52,100</td><td>$52,600</td><td>$2,000</td></tr>
-            <tr><td>$100k</td><td>$102,600</td><td>$103,100</td><td>$2,500</td></tr>
-            <tr><td>$150k</td><td>$154,600</td><td>$155,100</td><td>$2,750</td></tr>
-            <tr><td>$250k</td><td>$256,100</td><td>$256,600</td><td>$3,000</td></tr>
-            <tr><td>$300k</td><td>$307,100</td><td>$307,600</td><td>$3,500</td></tr>
-            <tr><td>$100k Static</td><td>$102,100</td><td>$102,600</td><td>$1,000</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </details>
-
-  <!-- ===================== Modern Tool ===================== -->
-  <details class="section" id="modernTool">
-    <summary>New Product Payout + Tier Calculator</summary>
-    <div class="section-body">
-
-      <div class="row">
-        <div>
-          <label>Account Size</label>
-          <select id="acct">
-            <option value="25k">25K</option>
-            <option value="50k" selected>50K</option>
-            <option value="100k">100K</option>
-            <option value="150k">150K</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Payout Type</label>
-          <select id="ptype">
-            <option value="eod" selected>EOD</option>
-            <option value="intra">Intraday</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Current Balance</label>
-          <input id="modern_balance" type="number" step="0.01" placeholder="e.g. 53425.00">
-        </div>
-      </div>
-
-      <div class="row" style="grid-template-columns:1fr 1fr 1fr;">
-        <div>
-          <label>Payout Number</label>
-          <select id="payout_num">
-            <option value="" selected disabled>Select payout number</option>
-            <option value="1">Payout #1</option>
-            <option value="2">Payout #2</option>
-            <option value="3">Payout #3</option>
-            <option value="4">Payout #4</option>
-            <option value="5">Payout #5</option>
-            <option value="6">Payout #6</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Desired Payout Request ($)</label>
-          <input id="modern_payout" type="number" step="0.01" placeholder="e.g. 1500">
-          <div style="margin-top:8px;display:flex;gap:10px;align-items:center">
-            <input id="modern_usemax" type="checkbox" style="width:auto;height:auto;margin:0">
-            <div class="k">Use max payout for this payout number</div>
-          </div>
-        </div>
-      </div>
-
-      <div id="liveReq" class="results"></div>
-      <div id="modernNeed" class="results" style="display:none"></div>
-      <div id="payoutTable" class="results" style="display:none"></div>
-    </div>
-  </details>
-
+<div class="v" style="font-size:15px;font-weight:600;margin-bottom:8px;">
+<span style="color:#ffd37a;">Over/Under Safety Net:</span>
+<span style="color:#e8eefc;"> Current Balance + Max Payout + Amount needed to meet Min Request Balance</span>
 </div>
-
+</div>
+</div>
+</div>
+</details>
+<!-- ===================== Legacy Regular Payout Tool ===================== -->
+<details class="section" id="legacyRegularTool">
+<summary>Legacy Payout Calculator (No Violation)</summary>
+<div class="section-body">
+<div class="row">
+<div>
+<label>Legacy Account Size</label>
+<select id="legacy_regular_acct">
+<option value="25k">$25k Account</option>
+<option selected="" value="50k">$50k Account</option>
+<option value="100k">$100k Account</option>
+<option value="150k">$150k Account</option>
+<option value="250k">$250k Account</option>
+<option value="300k">$300k Account</option>
+<option value="100k_static">$100k Static</option>
+</select>
+</div>
+<div>
+<label>Legacy Payout Number</label>
+<select id="legacy_regular_payout_num">
+<option selected="" value="1-3">Payouts 1-3</option>
+<option value="4-5">Payouts 4-5</option>
+<option value="6">Payouts 6+</option>
+</select>
+</div>
+<div>
+<label>Current Balance</label>
+<input id="legacy_regular_balance" placeholder="e.g. 52600.00" step="0.01" type="number"/>
+</div>
+</div>
+<div class="row">
+<div>
+<label>Desired Payout Request ($)</label>
+<input id="legacy_regular_payout" placeholder="e.g. 1500" step="0.01" type="number"/>
+</div>
+</div>
+<div class="note" id="legacyRegularPayoutNote">Payouts 1-3 are capped by account max. Payouts 4-5 must reach minimum request balance first, then can request up to the account max into the safety net. Payouts 6+ must reach minimum request balance first, then can request all except $100.</div>
+<div class="results" id="legacyRegularOut" style="display:none"></div>
+<div class="results" style="margin-top:14px;">
+<h2>Legacy – Maximum Payout Table</h2>
+<table>
+<thead>
+<tr>
+<th>Account Size</th>
+<th>Safety Net</th>
+<th>Min Request Balance</th>
+<th>Max Payout Amount</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>$25k</td><td>$26,100</td><td>$26,600</td><td>$1,500</td></tr>
+<tr><td>$50k</td><td>$52,100</td><td>$52,600</td><td>$2,000</td></tr>
+<tr><td>$100k</td><td>$102,600</td><td>$103,100</td><td>$2,500</td></tr>
+<tr><td>$150k</td><td>$154,600</td><td>$155,100</td><td>$2,750</td></tr>
+<tr><td>$250k</td><td>$256,100</td><td>$256,600</td><td>$3,000</td></tr>
+<tr><td>$300k</td><td>$307,100</td><td>$307,600</td><td>$3,500</td></tr>
+<tr><td>$100k Static</td><td>$102,100</td><td>$102,600</td><td>$1,000</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</details>
+<!-- ===================== Modern Tool ===================== -->
+<details class="section" id="modernTool">
+<summary>New Product Payout + Tier Calculator</summary>
+<div class="section-body">
+<div class="row">
+<div>
+<label>Account Size</label>
+<select id="acct">
+<option value="25k">25K</option>
+<option selected="" value="50k">50K</option>
+<option value="100k">100K</option>
+<option value="150k">150K</option>
+</select>
+</div>
+<div>
+<label>Payout Type</label>
+<select id="ptype">
+<option selected="" value="eod">EOD</option>
+<option value="intra">Intraday</option>
+</select>
+</div>
+<div>
+<label>Current Balance</label>
+<input id="modern_balance" placeholder="e.g. 53425.00" step="0.01" type="number"/>
+</div>
+</div>
+<div class="row" style="grid-template-columns:1fr 1fr 1fr;">
+<div>
+<label>Payout Number</label>
+<select id="payout_num">
+<option disabled="" selected="" value="">Select payout number</option>
+<option value="1">Payout #1</option>
+<option value="2">Payout #2</option>
+<option value="3">Payout #3</option>
+<option value="4">Payout #4</option>
+<option value="5">Payout #5</option>
+<option value="6">Payout #6</option>
+</select>
+</div>
+<div>
+<label>Desired Payout Request ($)</label>
+<input id="modern_payout" placeholder="e.g. 1500" step="0.01" type="number"/>
+<div style="margin-top:8px;display:flex;gap:10px;align-items:center">
+<input id="modern_usemax" style="width:auto;height:auto;margin:0" type="checkbox"/>
+<div class="k">Use max payout for this payout number</div>
+</div>
+</div>
+</div>
+<div class="results" id="liveReq"></div>
+<div class="results" id="modernNeed" style="display:none"></div>
+<div class="results" id="payoutTable" style="display:none"></div>
+</div>
+</details>
+</div>
 <script>
 const fmt0=n=>n.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
 const fmt2=n=>n.toLocaleString("en-US",{style:"currency",currency:"USD",minimumFractionDigits:2,maximumFractionDigits:2});
@@ -527,19 +498,19 @@ function renderModernNeed(){
       <h2>Payout Goal</h2>
       <div class="grid" style="grid-template-columns:1fr 1fr;">
         <div class="box">
-          <div class="k">Minimum Profit Needed</div>
+          <div class="k">Minimum Profit Needed<br>Balance You'll Be At</div>
           <div class="v">${fmt2(payoutAmount)}</div>
         </div>
 
         <div class="box">
-          <div class="k">Tier Level Required</div>
+          <div class="k">
           <div class="v">${tierText}</div>
         </div>
       </div>
 
       <div class="grid" style="grid-template-columns:1fr 1fr;">
         <div class="box">
-          <div class="k">Minimum Profit Needed For This Payout Number</div>
+          <div class="k">
           <div class="v">${fmt0(max)}</div>
         </div>
       </div>
@@ -564,19 +535,19 @@ function renderModernNeed(){
 
     <div class="grid" style="grid-template-columns:1fr 1fr;">
       <div class="box">
-        <div class="k">Minimum Profit Needed</div>
+        <div class="k">Minimum Profit Needed<br>Balance You'll Be At</div>
         <div class="v ${atOrOverSafety?'ok':'warn'}">${fmt2(needed)}</div>
       </div>
 
       <div class="box">
-        <div class="k">Tier Level Required</div>
+        <div class="k">
         <div class="v">${tierText}</div>
       </div>
     </div>
 
     <div class="grid" style="grid-template-columns:1fr 1fr;">
       <div class="box">
-        <div class="k">Minimum Profit Needed For This Payout Number</div>
+        <div class="k">
         <div class="v ${atOrOverSafety?'ok':'warn'}">${fmt0(payoutNumberNeed)}</div>
       </div>
     </div>
@@ -616,143 +587,8 @@ function renderModernPayoutTable(){
       <thead>
         <tr>
           <th>Payout Number</th>
-          <th>Minimum Profit Needed</th>
-          <th>Tier Level Required</th>
-          <th>Safety Net</th>
-          <th>Minimum Request Balance</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows}
-      </tbody>
-    </table>
-  `;
-}
-
-function updateModernTool(){
-  const payoutInput=document.getElementById("modern_payout");
-  const useMax=document.getElementById("modern_usemax").checked;
-  const setup=runModernCalcSetup();
-
-  if(useMax){
-    if(setup){
-      payoutInput.value=setup.max;
-    }
-  }
-
-  renderLiveRequirements();
-  renderModernNeed();
-  renderModernPayoutTable();
-}
-
-/* ===================== Legacy Tool Data ===================== */
-
-const LEGACY_SAFETY_NET={
-  "25k":26100,
-  "50k":52100,
-  "100k":102600,
-  "150k":154600,
-  "250k":256100,
-  "300k":307100,
-  "100k_static":102100
-};
-
-const LEGACY_MAX_PAYOUT_FIRST5={
-  "25k":1500,
-  "50k":2000,
-  "100k":2500,
-  "150k":2750,
-  "250k":3000,
-  "300k":3500,
-  "100k_static":1000
-};
-
-const LEGACY_START_BALANCE={
-  "25k":25000,
-  "50k":50000,
-  "100k":100000,
-  "150k":150000,
-  "250k":250000,
-  "300k":300000,
-  "100k_static":100000
-};
-
-function getLegacyMinimumRequestBalance(acct){
-  const safetyNet=LEGACY_SAFETY_NET[acct];
-  return safetyNet + MIN_PAYOUT;
-}
-
-function getLegacyRegularMaxDisplay(acct,payoutGroup){
-  if(payoutGroup === "6") return "Unlimited";
-  return fmt2(LEGACY_MAX_PAYOUT_FIRST5[acct]);
-}
-
-function renderLegacyRequirementTable(){
-  const rows = Object.keys(LEGACY_MAX_PAYOUT_FIRST5).map(acct=>{
-    const labelMap={
-      "25k":"$25k",
-      "50k":"$50k",
-      "100k":"$100k",
-      "150k":"$150k",
-      "250k":"$250k",
-      "300k":"$300k",
-      "100k_static":"$100k Static"
-    };
-
-    const safetyNet=LEGACY_SAFETY_NET[acct];
-    const max=LEGACY_MAX_PAYOUT_FIRST5[acct];
-    const balanceNeeded=safetyNet + max;
-
-    return `
-      <tr>
-        <td>${labelMap[acct]}</td>
-        <td>${fmt0(safetyNet)}</td>
-        <td>${fmt0(balanceNeeded)}</td>
-        <td>${fmt0(max)}</td>
-      </tr>
-    `;
-  }).join("");
-
-  document.getElementById("legacyRequirementTable").innerHTML=rows;
-}
-
-/* ===================== Legacy Violations ===================== */
-
-function syncLegacyMaxPayout(){
-  const acct=document.getElementById("legacy_acct").value;
-  const payoutInput=document.getElementById("legacy_payout");
-  const note=document.getElementById("legacyViolationPayoutNote");
-  const maxFirst5=LEGACY_MAX_PAYOUT_FIRST5[acct];
-
-  payoutInput.readOnly=true;
-  payoutInput.value=maxFirst5;
-  note.textContent="Violation tool uses max payout automatically.";
-}
-
-function runLegacyCalc(){
-  const acct=document.getElementById("legacy_acct").value;
-  const payoutGroup=document.getElementById("legacy_violation_payout_group").value;
-  const balRaw=document.getElementById("legacy_balance").value;
-  const payoutRaw=document.getElementById("legacy_payout").value;
-  const out=document.getElementById("legacyOut");
-
-  const safetyNet=LEGACY_SAFETY_NET[acct];
-  const maxPayout=LEGACY_MAX_PAYOUT_FIRST5[acct];
-  const minRequestBalance=getLegacyMinimumRequestBalance(acct);
-
-  syncLegacyMaxPayout();
-
-  if(!balRaw || !payoutRaw){
-    out.style.display="none";
-    return;
-  }
-
-  const balance=parseFloat(balRaw);
-  const payout=parseFloat(payoutRaw);
-
-  if(!Number.isFinite(balance) || balance <= 0){
-    out.style.display="block";
-    out.innerHTML=`<div class="warn">Enter a balance greater than 0.</div>`;
+          <th>Minimum Profit Needed<br>Balance You'll Be At</th>
+          <th>`;
     return;
   }
 
@@ -796,7 +632,7 @@ function runLegacyCalc(){
 
     <div class="grid" style="grid-template-columns:1fr 1fr;">
       <div class="box">
-        <div class="k">Minimum Profit Needed</div>
+        <div class="k">Minimum Profit Needed<br>Balance You'll Be At</div>
         <div class="v ${needed===0?'ok':'warn'}">${fmt2(needed)}</div>
         <div class="note">${mathLine}</div>
       </div>
@@ -902,7 +738,7 @@ function runLegacyRegularCalc(){
 
     <div class="grid" style="grid-template-columns:1fr 1fr;">
       <div class="box">
-        <div class="k">Minimum Profit Needed</div>
+        <div class="k">Minimum Profit Needed<br>Balance You'll Be At</div>
         <div class="v">${fmt2(needed)}</div>
       </div>
       <div class="box">
@@ -954,6 +790,5 @@ function initializeCalculator(){
 initializeCalculator();
 
 </script>
-
 </body>
 </html>
