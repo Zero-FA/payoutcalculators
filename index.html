@@ -493,7 +493,6 @@ function renderModernNeed(){
 
   const { max } = calcSetup;
   const safety=(type==="eod") ? req.safetyNetEOD : req.safetyNetIntra;
-  const minRequestBalance=getMinimumRequestBalance(safety);
 
   if(!payoutRaw){
     out.style.display="none";
@@ -520,7 +519,7 @@ function renderModernNeed(){
     return;
   }
 
-  const targetBalance=minRequestBalance + payoutAmount;
+  const targetBalance=safety + payoutAmount;
 
   if(balanceRaw === ""){
     out.style.display="block";
@@ -564,7 +563,7 @@ function renderModernNeed(){
       </div>
     </div>
     <div class="note" style="margin-top:10px;">
-      Target balance = Minimum Request Balance ${fmt2(minRequestBalance)} + Requested Payout ${fmt2(payoutAmount)} = ${fmt2(targetBalance)}
+      Target balance = Safety Net ${fmt2(safety)} + Requested Payout ${fmt2(payoutAmount)} = ${fmt2(targetBalance)}
     </div>
   `;
 }
