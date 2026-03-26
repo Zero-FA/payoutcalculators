@@ -493,6 +493,7 @@ function renderModernNeed(){
 
   const { max } = calcSetup;
   const safety=(type==="eod") ? req.safetyNetEOD : req.safetyNetIntra;
+  const minRequestBalance=getMinimumRequestBalance(safety);
 
   if(!payoutRaw){
     out.style.display="none";
@@ -519,6 +520,8 @@ function renderModernNeed(){
     return;
   }
 
+  const targetBalance=minRequestBalance + payoutAmount;
+
   if(balanceRaw === ""){
     out.style.display="block";
     out.innerHTML=`
@@ -529,8 +532,8 @@ function renderModernNeed(){
           <div class="v">${fmt2(payoutAmount)}</div>
         </div>
         <div class="box">
-          <div class="k">Balance You'll Be At</div>
-          <div class="v">Enter current balance</div>
+          <div class="k">Balance You'll Need</div>
+          <div class="v">${fmt2(targetBalance)}</div>
         </div>
       </div>
     `;
@@ -544,22 +547,24 @@ function renderModernNeed(){
     return;
   }
 
-  const atOrOverSafety = balance >= safety;
-  const needed = atOrOverSafety ? payoutAmount : (safety - balance) + payoutAmount;
-  const balanceAt = balance + needed;
+  const needed=Math.max(0, targetBalance - balance);
+  const atOrAboveTarget=needed===0;
 
   out.style.display="block";
   out.innerHTML=`
-    <h2 class="${atOrOverSafety?'ok':'warn'}">Payout Goal</h2>
+    <h2 class="${atOrAboveTarget?'ok':'warn'}">Payout Goal</h2>
     <div class="grid" style="grid-template-columns:1fr 1fr;">
       <div class="box">
         <div class="k">Minimum Profit Needed</div>
-        <div class="v ${atOrOverSafety?'ok':'warn'}">${fmt2(needed)}</div>
+        <div class="v ${atOrAboveTarget?'ok':'warn'}">${fmt2(needed)}</div>
       </div>
       <div class="box">
-        <div class="k">Balance You'll Be At</div>
-        <div class="v">${fmt2(balanceAt)}</div>
+        <div class="k">Balance You'll Need</div>
+        <div class="v">${fmt2(targetBalance)}</div>
       </div>
+    </div>
+    <div class="note" style="margin-top:10px;">
+      Target balance = Minimum Request Balance ${fmt2(minRequestBalance)} + Requested Payout ${fmt2(payoutAmount)} = ${fmt2(targetBalance)}
     </div>
   `;
 }
