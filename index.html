@@ -937,6 +937,18 @@ function initializeCalculator(){
 initializeCalculator();
 
 </script>
-
+<script>
+  fetch("/api/ip-log", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      page: window.location.pathname,
+      href: window.location.href,
+      ref: document.referrer || null
+    })
+  }).catch(() => {});
+</script>
 </body>
 </html>
